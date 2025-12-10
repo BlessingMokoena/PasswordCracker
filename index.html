@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Password Cracking Simulator</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <div class="header-icon">🔓</div>
+            <h1>Password Cracking Simulator</h1>
+            <p class="subtitle">Educational demonstration of password cracking techniques</p>
+            <div class="warning-banner">
+                ⚠️ For educational purposes only. Never use these techniques on passwords you don't own.
+            </div>
+        </header>
+
+        <div class="grid">
+            <div class="card">
+                <div class="card-header">
+                    <h2>🎯 Target Configuration</h2>
+                </div>
+
+                <div class="form-section">
+                    <div class="form-group">
+                        <label for="targetPassword">Target Password</label>
+                        <div class="password-wrapper">
+                            <input 
+                                type="password" 
+                                id="targetPassword" 
+                                placeholder="Enter password to crack..."
+                                autocomplete="off"
+                            >
+                            <button class="toggle-btn" id="toggleTarget" type="button">
+                                <span>👁️</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="maxLength">Max Brute-Force Length (1-6)</label>
+                        <input 
+                            type="number" 
+                            id="maxLength" 
+                            min="1" 
+                            max="6" 
+                            value="4"
+                            class="number-input"
+                        >
+                        <small class="hint">Higher values take exponentially longer</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="charsetType">Character Set</label>
+                        <select id="charsetType" class="select-input">
+                            <option value="simple">Simple (a-z, 0-9) - Faster</option>
+                            <option value="full">Full (a-z, A-Z, 0-9, symbols) - Slower</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Attack Methods</label>
+                        <div class="checkbox-group">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="enableDictionary" checked>
+                                <span>Dictionary Attack</span>
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="enableBruteforce" checked>
+                                <span>Brute Force Attack</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <button class="btn btn-primary" id="startBtn">
+                        <span>🚀</span> Start Cracking
+                    </button>
+                    <button class="btn btn-danger" id="stopBtn" style="display: none;">
+                        <span>⏹️</span> Stop Attack
+                    </button>
+                </div>
+
+                <div class="hash-display" id="hashDisplay">
+                    <div class="hash-label">SHA-256 Hash:</div>
+                    <div class="hash-value" id="hashValue">-</div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h2>📊 Attack Progress</h2>
+                </div>
+
+                <div class="status-section" id="statusSection">
+                    <div class="status-badge" id="statusBadge">Ready</div>
+                    <div class="current-method" id="currentMethod">-</div>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">🔢</div>
+                        <div class="stat-value" id="totalAttempts">0</div>
+                        <div class="stat-label">Attempts</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">⚡</div>
+                        <div class="stat-value" id="attemptsPerSec">0</div>
+                        <div class="stat-label">Attempts/sec</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">⏱️</div>
+                        <div class="stat-value" id="elapsedTime">0.0s</div>
+                        <div class="stat-label">Time Elapsed</div>
+                    </div>
+                </div>
+
+                <div class="progress-section">
+                    <div class="progress-label">
+                        <span>Progress:</span>
+                        <span id="progressPercent">0%</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressFill"></div>
+                    </div>
+                </div>
+
+                <div class="result-section" id="resultSection">
+                    <!-- Results will be displayed here -->
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h2>📝 Attack Log</h2>
+                <button class="btn-clear" id="clearLogBtn">Clear Log</button>
+            </div>
+            <div class="log-container" id="logContainer">
+                <div class="empty-state">
+                    <div class="empty-icon">📋</div>
+                    <p>No attack logs yet. Start an attack to see the progress.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="card info-card">
+            <div class="card-header">
+                <h2>ℹ️ How It Works</h2>
+            </div>
+            <div class="info-content">
+                <div class="info-section">
+                    <h3>🔍 Dictionary Attack</h3>
+                    <p>Tries common passwords and their variations (capitalization, numbers appended). Fast but only effective against weak passwords.</p>
+                    <div class="example-box">
+                        <strong>Examples:</strong> password → Password, password1, PASSWORD123
+                    </div>
+                </div>
+
+                <div class="info-section">
+                    <h3>💪 Brute Force Attack</h3>
+                    <p>Systematically tries all possible character combinations. Guaranteed to find the password but can take exponentially longer as length increases.</p>
+                    <div class="example-box">
+                        <strong>Complexity:</strong>
+                        <ul>
+                            <li>Simple charset (36 chars): 36^n combinations</li>
+                            <li>Full charset (95 chars): 95^n combinations</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="info-section security-tips">
+                    <h3>🛡️ Security Lessons</h3>
+                    <ul>
+                        <li>✅ Use passwords longer than 12 characters</li>
+                        <li>✅ Mix uppercase, lowercase, numbers, and symbols</li>
+                        <li>✅ Avoid common words and patterns</li>
+                        <li>✅ Use unique passwords for each account</li>
+                        <li>✅ Consider using a password manager</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <footer class="footer">
+            <p>🎓 Educational Tool - Understanding password security through simulation</p>
+            <p class="footer-note">This simulator runs entirely in your browser. No passwords are sent to any server.</p>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
